@@ -67,6 +67,12 @@ RUN apk add --no-cache --virtual=.build-deps \
     && cd tensorflow-${TENSORFLOW_VERSION} \
     && : add python symlink to avoid python detection error in configure \
     && $(cd /usr/bin && ln -s python3 python) \
+    && : change to use more stable mirror. see PR 5346 \
+    && sed -i -e 's=ufpr.dl.sourceforge.net/project/giflib=cdimage.debian.org/mirror/xbmc.org/build-deps/sources=' \
+            tensorflow/contrib/cmake/external/gif.cmake \
+    && sed -i -e 's=ufpr.dl.sourceforge.net/project/giflib=cdimage.debian.org/mirror/xbmc.org/build-deps/sources=' \
+        -e 's=ufpr.dl.sourceforge.net/project/swig/swig/swig-3.0.8=cdimage.debian.org/mirror/xbmc.org/build-deps/sources=' \
+            tensorflow/workspace.bzl \
     && echo | PYTHON_BIN_PATH=/usr/bin/python TF_NEED_GCP=0 TF_NEED_HDFS=0 TF_NEED_CUDA=0 bash configure \
     && : comment out 'testonly' to avoid compilation failure. it will be fixed in future version \
     && sed -i -e '/name = "construction_fails_op"/{N;s/testonly/#testonly/}' tensorflow/python/BUILD \
