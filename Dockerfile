@@ -6,7 +6,7 @@ ENV LOCAL_RESOURCES 2048,.8,1.0
 ENV GLIBC_VERSION 2.23-r3
 ENV BAZEL_VERSION 0.4.0
 ENV LAPACK_VERSION 3.6.1
-ENV TENSORFLOW_VERSION 0.11.0rc2
+ENV TENSORFLOW_VERSION 0.11.0
 
 RUN apk add --no-cache python3 freetype libgfortran libpng libjpeg-turbo imagemagick graphviz git
 RUN apk add --no-cache --virtual=.build-deps \
