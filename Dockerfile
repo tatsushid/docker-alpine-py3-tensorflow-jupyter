@@ -8,10 +8,9 @@ ENV BAZEL_VERSION 0.4.0
 ENV LAPACK_VERSION 3.6.1
 ENV TENSORFLOW_VERSION 0.11.0rc2
 
-RUN apk add --no-cache python3 freetype libgfortran libpng libjpeg-turbo imagemagick graphviz
+RUN apk add --no-cache python3 freetype libgfortran libpng libjpeg-turbo imagemagick graphviz git
 RUN apk add --no-cache --virtual=.build-deps \
         bash \
-        ca-certificates \
         cmake \
         curl \
         freetype-dev \
