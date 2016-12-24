@@ -6,7 +6,7 @@ ENV LOCAL_RESOURCES 2048,.8,1.0
 ENV GLIBC_VERSION 2.23-r3
 ENV BAZEL_VERSION 0.4.3
 ENV LAPACK_VERSION 3.6.1
-ENV TENSORFLOW_VERSION 0.11.0
+ENV TENSORFLOW_VERSION 0.12.0
 
 RUN apk add --no-cache python3 freetype libgfortran libpng libjpeg-turbo imagemagick graphviz git
 RUN apk add --no-cache --virtual=.build-deps \
@@ -67,21 +67,13 @@ RUN apk add --no-cache --virtual=.build-deps \
     && cd tensorflow-${TENSORFLOW_VERSION} \
     && : add python symlink to avoid python detection error in configure \
     && $(cd /usr/bin && ln -s python3 python) \
-    && : change to use more stable mirror. see PR 5346 \
-    && sed -i -e 's=ufpr.dl.sourceforge.net/project/giflib=cdimage.debian.org/mirror/xbmc.org/build-deps/sources=' \
-            tensorflow/contrib/cmake/external/gif.cmake \
-    && sed -i -e 's=ufpr.dl.sourceforge.net/project/giflib=cdimage.debian.org/mirror/xbmc.org/build-deps/sources=' \
-        -e 's=ufpr.dl.sourceforge.net/project/swig/swig/swig-3.0.8=cdimage.debian.org/mirror/xbmc.org/build-deps/sources=' \
-            tensorflow/workspace.bzl \
-    && echo | PYTHON_BIN_PATH=/usr/bin/python TF_NEED_GCP=0 TF_NEED_HDFS=0 TF_NEED_CUDA=0 bash configure \
-    && : comment out 'testonly' to avoid compilation failure. it will be fixed in future version \
-    && sed -i -e '/name = "construction_fails_op"/{N;s/testonly/#testonly/}' tensorflow/python/BUILD \
+    && echo | PYTHON_BIN_PATH=/usr/bin/python TF_NEED_GCP=0 TF_NEED_HDFS=0 TF_NEED_OPENCL=0 TF_NEED_CUDA=0 bash configure \
     && bazel build -c opt --local_resources ${LOCAL_RESOURCES} //tensorflow/tools/pip_package:build_pip_package \
     && ./bazel-bin/tensorflow/tools/pip_package/build_pip_package /tmp/tensorflow_pkg \
     && : \
     && : install python modules including TensorFlow \
     && cd \
-    && pip3 install --no-cache-dir /tmp/tensorflow_pkg/tensorflow-${TENSORFLOW_VERSION}-py3-none-any.whl \
+    && pip3 install --no-cache-dir /tmp/tensorflow_pkg/tensorflow-${TENSORFLOW_VERSION}-cp35-cp35m-linux_x86_64.whl \
     && pip3 install --no-cache-dir pandas scipy jupyter \
     && pip3 install --no-cache-dir scikit-learn matplotlib Pillow \
     && pip3 install --no-cache-dir google-api-python-client \

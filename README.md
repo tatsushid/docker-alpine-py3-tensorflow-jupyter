@@ -13,7 +13,7 @@ Docker image.
 
 ## Supported tags and respective `Dockerfile` links
 
-- [`0.11.0`, `latest`](https://github.com/tatsushid/docker-alpine-py3-tensorflow-jupyter/blob/master/Dockerfile)
+- [`0.12.0`, `latest`](https://github.com/tatsushid/docker-alpine-py3-tensorflow-jupyter/blob/master/Dockerfile)
 
 ## How to use this image
 
