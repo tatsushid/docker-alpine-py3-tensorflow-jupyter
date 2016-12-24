@@ -4,7 +4,7 @@ ENV JAVA_HOME /usr/lib/jvm/java-1.8-openjdk
 ENV LOCAL_RESOURCES 2048,.8,1.0
 
 ENV GLIBC_VERSION 2.23-r3
-ENV BAZEL_VERSION 0.4.0
+ENV BAZEL_VERSION 0.4.3
 ENV LAPACK_VERSION 3.6.1
 ENV TENSORFLOW_VERSION 0.11.0
 
@@ -41,22 +41,22 @@ RUN apk add --no-cache --virtual=.build-deps \
     && cp -p libblas.a /usr/lib/ \
     && cp -p liblapack.a /usr/lib/ \
     && : \
-    && : prepare for building TensorFlow. install glibc to build Bazel. \
-    && : install numpy and wheel python module too \
+    && : prepare for building TensorFlow \
+    && : install numpy and wheel python module \
     && cd /tmp \
     && : numpy requires xlocale.h but it is not provided by musl-libc so just copy it from locale.h \
     && $(cd /usr/include/ && ln -s locale.h xlocale.h) \
     && pip3 install --no-cache-dir numpy wheel \
-    && curl -SLO https://github.com/sgerrand/alpine-pkg-glibc/releases/download/unreleased/glibc-${GLIBC_VERSION}.apk \
-    && curl -SLo /etc/apk/keys/sgerrand.rsa.pub https://github.com/sgerrand/alpine-pkg-glibc/releases/download/unreleased/sgerrand.rsa.pub \
-    && apk add --no-cache --virtual=.glibc glibc-${GLIBC_VERSION}.apk \
     && : \
     && : install Bazel to build TensorFlow \
-    && curl -SL https://github.com/bazelbuild/bazel/archive/${BAZEL_VERSION}.tar.gz \
-        | tar xzf - \
+    && curl -SLO https://github.com/bazelbuild/bazel/releases/download/${BAZEL_VERSION}/bazel-${BAZEL_VERSION}-dist.zip \
+    && mkdir bazel-${BAZEL_VERSION} \
+    && unzip -qd bazel-${BAZEL_VERSION} bazel-${BAZEL_VERSION}-dist.zip \
     && cd bazel-${BAZEL_VERSION} \
     && : add -fpermissive compiler option to avoid compilation failure \
-    && sed -i -e '/"-std=c++0x"/{h;x;s//"-fpermissive"/;x;G}' tools/cpp/cc_configure.bzl \
+    && sed -i -e '/"-std=c++0x"/{h;s//"-fpermissive"/;x;G}' tools/cpp/cc_configure.bzl \
+    && : add '#include <sys/stat.h>' to avoid mode_t type error \
+    && sed -i -e '/#endif  \/\/ COMPILER_MSVC/{h;s//#else/;G;s//#include <sys\/stat.h>/;G;}' third_party/ijar/common.h \
     && bash compile.sh \
     && cp -p output/bazel /usr/bin/ \
     && : \
@@ -87,8 +87,7 @@ RUN apk add --no-cache --virtual=.build-deps \
     && pip3 install --no-cache-dir google-api-python-client \
     && : \
     && : clean up unneeded packages and files \
-    && apk del .build-deps .glibc \
-    && rm -f /etc/apk/keys/sgerrand.rsa.pub \
+    && apk del .build-deps \
     && rm -f /usr/bin/bazel \
     && rm -rf /tmp/* /root/.cache
 
