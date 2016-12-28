@@ -5,7 +5,6 @@ ENV LOCAL_RESOURCES 2048,.8,1.0
 
 ENV GLIBC_VERSION 2.23-r3
 ENV BAZEL_VERSION 0.4.3
-ENV LAPACK_VERSION 3.6.1
 ENV TENSORFLOW_VERSION 0.12.0
 
 RUN apk add --no-cache python3 python3-tkinter freetype lapack libgfortran libpng libjpeg-turbo imagemagick graphviz git
