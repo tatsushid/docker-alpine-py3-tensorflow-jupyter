@@ -1,4 +1,4 @@
-FROM alpine:3.4
+FROM alpine:3.5
 
 ENV JAVA_HOME /usr/lib/jvm/java-1.8-openjdk
 ENV LOCAL_RESOURCES 2048,.8,1.0
