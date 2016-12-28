@@ -8,7 +8,7 @@ ENV BAZEL_VERSION 0.4.3
 ENV LAPACK_VERSION 3.6.1
 ENV TENSORFLOW_VERSION 0.12.0
 
-RUN apk add --no-cache python3 freetype libgfortran libpng libjpeg-turbo imagemagick graphviz git
+RUN apk add --no-cache python3 python3-tkinter freetype lapack libgfortran libpng libjpeg-turbo imagemagick graphviz git
 RUN apk add --no-cache --virtual=.build-deps \
         bash \
         cmake \
@@ -16,6 +16,7 @@ RUN apk add --no-cache --virtual=.build-deps \
         freetype-dev \
         g++ \
         gfortran \
+        lapack-dev \
         libjpeg-turbo-dev \
         libpng-dev \
         linux-headers \
@@ -28,19 +29,6 @@ RUN apk add --no-cache --virtual=.build-deps \
         sed \
         swig \
         zip \
-    && : build and install blas and lapack libraries. numpy requires them \
-    && cd /tmp \
-    && curl -SL http://www.netlib.org/lapack/lapack-${LAPACK_VERSION}.tgz \
-        | tar xzf - \
-    && cd lapack-${LAPACK_VERSION} \
-    && sed -e 's/^OPTS.*/OPTS     = -O2 -m64 -mtune=generic -fPIC/' \
-        -e 's/^NOOPT.*/NOOPT    = -O0 -m64 -mtune=generic -fPIC/' \
-        -e 's/librefblas\.a/libblas.a/' \
-            make.inc.example > make.inc \
-    && make blaslib lapacklib \
-    && cp -p libblas.a /usr/lib/ \
-    && cp -p liblapack.a /usr/lib/ \
-    && : \
     && : prepare for building TensorFlow \
     && : install numpy and wheel python module \
     && cd /tmp \
