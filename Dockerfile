@@ -85,7 +85,7 @@ RUN jupyter notebook --generate-config \
             /root/.jupyter/jupyter_notebook_config.py
 RUN ipython profile create \
     && sed -i -e "/c\.InteractiveShellApp\.matplotlib/a c.InteractiveShellApp.matplotlib = 'inline'" \
-            /root/.ipython/profile_default/ipython_config.py
+            /root/.ipython/profile_default/ipython_kernel_config.py
 
 ADD init.sh /usr/local/bin/init.sh
 RUN chmod u+x /usr/local/bin/init.sh
