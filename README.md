@@ -19,12 +19,21 @@ Docker image.
 
 Please run the following
 
-```bash
+```shellsession
 docker run -itd -p 8888:8888 -e PASSWORD=foobar tatsushid/alpine-py3-tensorflow-jupyter
 ```
 
 and access to `http://{docker host}:8888/`. It opens Jupyter's login panel so
 please enter the password which you specified as `PASSWORD` environment value
+
+This repository also provides Docker Compose example so you can boot a
+container of this image by running
+
+```shellsession
+docker-compose up
+```
+
+in `docker_compose_example` directory.
 
 ## License
 This alpine-py3-tensorflow-jupyter Docker image is under MIT License. See the

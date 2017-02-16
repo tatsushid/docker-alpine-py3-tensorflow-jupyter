@@ -1,0 +1,10 @@
+version: '2'
+services:
+  tensorflow_jupyter:
+    image: tatsushid/alpine-py3-tensorflow-jupyter:latest
+    ports:
+      - 8888:8888
+    volumes:
+      - ./notebook:/root/notebook/my_notes
+    environment:
+      - PASSWORD=foobar
