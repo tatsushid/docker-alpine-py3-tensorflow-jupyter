@@ -4,7 +4,7 @@ ENV JAVA_HOME /usr/lib/jvm/java-1.8-openjdk
 ENV LOCAL_RESOURCES 2048,.8,1.0
 
 ENV BAZEL_VERSION 0.4.3
-ENV TENSORFLOW_VERSION 0.12.1
+ENV TENSORFLOW_VERSION 1.0.0
 
 RUN apk add --no-cache python3 python3-tkinter freetype lapack libgfortran libpng libjpeg-turbo imagemagick graphviz git
 RUN apk add --no-cache --virtual=.build-deps \
@@ -48,14 +48,22 @@ RUN apk add --no-cache --virtual=.build-deps \
     && : \
     && : build TensorFlow pip package \
     && cd /tmp \
-    && curl -SL https://github.com/tensorflow/tensorflow/archive/${TENSORFLOW_VERSION}.tar.gz \
+    && curl -SL https://github.com/tensorflow/tensorflow/archive/v${TENSORFLOW_VERSION}.tar.gz \
         | tar xzf - \
     && cd tensorflow-${TENSORFLOW_VERSION} \
     && : add python symlink to avoid python detection error in configure \
     && $(cd /usr/bin && ln -s python3 python) \
-    && : modify zlib library URL fixed in upstream \
-    && sed -i -e 's|\(zlib\.net\)|\1/fossils|' tensorflow/workspace.bzl \
-    && echo | PYTHON_BIN_PATH=/usr/bin/python TF_NEED_GCP=0 TF_NEED_HDFS=0 TF_NEED_OPENCL=0 TF_NEED_CUDA=0 bash configure \
+    && : musl-libc does not have "secure_getenv" function \
+    && sed -i -e '/JEMALLOC_HAVE_SECURE_GETENV/d' third_party/jemalloc.BUILD \
+    && echo | PYTHON_BIN_PATH=/usr/bin/python \
+                CC_OPT_FLAGS="-march=native" \
+                TF_NEED_JEMALLOC=1 \
+                TF_NEED_GCP=0 \
+                TF_NEED_HDFS=0 \
+                TF_NEED_OPENCL=0 \
+                TF_NEED_CUDA=0 \
+                TF_ENABLE_XLA=0 \
+                bash configure \
     && bazel build -c opt --local_resources ${LOCAL_RESOURCES} //tensorflow/tools/pip_package:build_pip_package \
     && ./bazel-bin/tensorflow/tools/pip_package/build_pip_package /tmp/tensorflow_pkg \
     && : \
