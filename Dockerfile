@@ -4,7 +4,7 @@ ENV JAVA_HOME /usr/lib/jvm/java-1.8-openjdk
 ENV LOCAL_RESOURCES 2048,.8,1.0
 
 ENV BAZEL_VERSION 0.4.3
-ENV TENSORFLOW_VERSION 1.0.0
+ENV TENSORFLOW_VERSION 1.0.1
 
 RUN apk add --no-cache python3 python3-tkinter freetype lapack libgfortran libpng libjpeg-turbo imagemagick graphviz git
 RUN apk add --no-cache --virtual=.build-deps \
