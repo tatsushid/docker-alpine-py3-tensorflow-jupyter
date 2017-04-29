@@ -1,5 +1,5 @@
 IMAGE_NAME := alpine-py3-tensorflow-jupyter
-IMAGE_TAG := 1.0.1
+IMAGE_TAG := 1.1.0
 
 .PHONY: all clean build
 

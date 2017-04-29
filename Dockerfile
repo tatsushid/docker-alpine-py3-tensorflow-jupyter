@@ -4,7 +4,7 @@ ENV JAVA_HOME /usr/lib/jvm/java-1.8-openjdk
 ENV LOCAL_RESOURCES 2048,.8,1.0
 
 ENV BAZEL_VERSION 0.4.3
-ENV TENSORFLOW_VERSION 1.0.1
+ENV TENSORFLOW_VERSION 1.1.0
 
 RUN apk add --no-cache python3 python3-tkinter freetype lapack libgfortran libpng libjpeg-turbo imagemagick graphviz git
 RUN apk add --no-cache --virtual=.build-deps \
@@ -55,6 +55,10 @@ RUN apk add --no-cache --virtual=.build-deps \
     && $(cd /usr/bin && ln -s python3 python) \
     && : musl-libc does not have "secure_getenv" function \
     && sed -i -e '/JEMALLOC_HAVE_SECURE_GETENV/d' third_party/jemalloc.BUILD \
+    && : use protobuf build error fixed version \
+    && sed -i -e 's/2b7430d96aeff2bb624c8d52182ff5e4b9f7f18a/af2d5f5ad3808b38ea58c9880be1b81fd2a89278/' \
+        -e 's/e5d3d4e227a0f7afb8745df049bbd4d55474b158ca5aaa2a0e31099af24be1d0/89fb700e6348a07829fac5f10133e44de80f491d1f23bcc65cba072c3b374525/' \
+            tensorflow/workspace.bzl \
     && echo | PYTHON_BIN_PATH=/usr/bin/python \
                 CC_OPT_FLAGS="-march=native" \
                 TF_NEED_JEMALLOC=1 \
@@ -79,7 +83,7 @@ RUN apk add --no-cache --virtual=.build-deps \
     && rm -f /usr/bin/bazel \
     && rm -rf /tmp/* /root/.cache
 
-RUN jupyter notebook --generate-config \
+RUN jupyter notebook --generate-config --allow-root \
     && sed -i -e "/c\.NotebookApp\.ip/a c.NotebookApp.ip = '*'" \
         -e "/c\.NotebookApp\.open_browser/a c.NotebookApp.open_browser = False" \
             /root/.jupyter/jupyter_notebook_config.py
