@@ -1,4 +1,4 @@
-FROM alpine:3.5
+FROM alpine:3.6
 
 ENV JAVA_HOME /usr/lib/jvm/java-1.8-openjdk
 ENV LOCAL_RESOURCES 2048,.8,1.0
@@ -73,7 +73,7 @@ RUN apk add --no-cache --virtual=.build-deps \
     && : \
     && : install python modules including TensorFlow \
     && cd \
-    && pip3 install --no-cache-dir /tmp/tensorflow_pkg/tensorflow-${TENSORFLOW_VERSION}-cp35-cp35m-linux_x86_64.whl \
+    && pip3 install --no-cache-dir /tmp/tensorflow_pkg/tensorflow-${TENSORFLOW_VERSION}-cp36-cp36m-linux_x86_64.whl \
     && pip3 install --no-cache-dir pandas scipy jupyter \
     && pip3 install --no-cache-dir scikit-learn matplotlib Pillow \
     && pip3 install --no-cache-dir google-api-python-client \
