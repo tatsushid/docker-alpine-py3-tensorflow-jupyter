@@ -1,10 +1,10 @@
 FROM alpine:3.6
 
 ENV JAVA_HOME /usr/lib/jvm/java-1.8-openjdk
-ENV LOCAL_RESOURCES 2048,.8,1.0
+ENV LOCAL_RESOURCES 2048,.5,1.0
 
 ENV BAZEL_VERSION 0.5.2
-ENV TENSORFLOW_VERSION 1.1.0
+ENV TENSORFLOW_VERSION 1.2.0
 
 RUN apk add --no-cache python3 python3-tkinter freetype lapack libgfortran libpng libjpeg-turbo imagemagick graphviz git
 RUN apk add --no-cache --virtual=.build-deps \
@@ -59,15 +59,18 @@ RUN apk add --no-cache --virtual=.build-deps \
     && sed -i -e 's/2b7430d96aeff2bb624c8d52182ff5e4b9f7f18a/af2d5f5ad3808b38ea58c9880be1b81fd2a89278/' \
         -e 's/e5d3d4e227a0f7afb8745df049bbd4d55474b158ca5aaa2a0e31099af24be1d0/89fb700e6348a07829fac5f10133e44de80f491d1f23bcc65cba072c3b374525/' \
             tensorflow/workspace.bzl \
-    && echo | PYTHON_BIN_PATH=/usr/bin/python \
-                CC_OPT_FLAGS="-march=native" \
-                TF_NEED_JEMALLOC=1 \
-                TF_NEED_GCP=0 \
-                TF_NEED_HDFS=0 \
-                TF_NEED_OPENCL=0 \
-                TF_NEED_CUDA=0 \
-                TF_ENABLE_XLA=0 \
-                bash configure \
+    && PYTHON_BIN_PATH=/usr/bin/python \
+        PYTHON_LIB_PATH=/usr/lib/python3.6/site-packages \
+        CC_OPT_FLAGS="-march=native" \
+        TF_NEED_MKL=0 \
+        TF_NEED_JEMALLOC=1 \
+        TF_NEED_GCP=0 \
+        TF_NEED_HDFS=0 \
+        TF_ENABLE_XLA=0 \
+        TF_NEED_VERBS=0 \
+        TF_NEED_OPENCL=0 \
+        TF_NEED_CUDA=0 \
+        bash configure \
     && bazel build -c opt --local_resources ${LOCAL_RESOURCES} //tensorflow/tools/pip_package:build_pip_package \
     && ./bazel-bin/tensorflow/tools/pip_package/build_pip_package /tmp/tensorflow_pkg \
     && : \
