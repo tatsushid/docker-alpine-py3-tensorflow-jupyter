@@ -6,33 +6,32 @@ ENV LOCAL_RESOURCES 2048,.5,1.0
 ENV BAZEL_VERSION 0.5.2
 ENV TENSORFLOW_VERSION 1.2.0
 
-RUN apk add --no-cache python3 python3-tkinter freetype lapack libgfortran libpng libjpeg-turbo imagemagick graphviz git
+RUN apk add --no-cache python3 python3-tkinter py3-numpy py3-numpy-f2py freetype libpng libjpeg-turbo imagemagick graphviz git
 RUN apk add --no-cache --virtual=.build-deps \
         bash \
         cmake \
         curl \
         freetype-dev \
         g++ \
-        gfortran \
-        lapack-dev \
         libjpeg-turbo-dev \
         libpng-dev \
         linux-headers \
         make \
         musl-dev \
+        openblas-dev \
         openjdk8 \
+        patch \
         perl \
         python3-dev \
+        py-numpy-dev \
         rsync \
         sed \
         swig \
         zip \
     && : prepare for building TensorFlow \
-    && : install numpy and wheel python module \
+    && : install wheel python module \
     && cd /tmp \
-    && : numpy requires xlocale.h but it is not provided by musl-libc so just copy it from locale.h \
-    && $(cd /usr/include/ && ln -s locale.h xlocale.h) \
-    && pip3 install --no-cache-dir numpy wheel \
+    && pip3 install --no-cache-dir wheel \
     && : \
     && : install Bazel to build TensorFlow \
     && curl -SLO https://github.com/bazelbuild/bazel/releases/download/${BAZEL_VERSION}/bazel-${BAZEL_VERSION}-dist.zip \
