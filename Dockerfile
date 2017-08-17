@@ -4,7 +4,7 @@ ENV JAVA_HOME /usr/lib/jvm/java-1.8-openjdk
 ENV LOCAL_RESOURCES 2048,.5,1.0
 
 ENV BAZEL_VERSION 0.5.2
-ENV TENSORFLOW_VERSION 1.2.0
+ENV TENSORFLOW_VERSION 1.3.0
 
 RUN apk add --no-cache python3 python3-tkinter py3-numpy py3-numpy-f2py freetype libpng libjpeg-turbo imagemagick graphviz git
 RUN apk add --no-cache --virtual=.build-deps \
@@ -54,10 +54,6 @@ RUN apk add --no-cache --virtual=.build-deps \
     && $(cd /usr/bin && ln -s python3 python) \
     && : musl-libc does not have "secure_getenv" function \
     && sed -i -e '/JEMALLOC_HAVE_SECURE_GETENV/d' third_party/jemalloc.BUILD \
-    && : use protobuf build error fixed version \
-    && sed -i -e 's/2b7430d96aeff2bb624c8d52182ff5e4b9f7f18a/af2d5f5ad3808b38ea58c9880be1b81fd2a89278/' \
-        -e 's/e5d3d4e227a0f7afb8745df049bbd4d55474b158ca5aaa2a0e31099af24be1d0/89fb700e6348a07829fac5f10133e44de80f491d1f23bcc65cba072c3b374525/' \
-            tensorflow/workspace.bzl \
     && PYTHON_BIN_PATH=/usr/bin/python \
         PYTHON_LIB_PATH=/usr/lib/python3.6/site-packages \
         CC_OPT_FLAGS="-march=native" \
@@ -69,6 +65,7 @@ RUN apk add --no-cache --virtual=.build-deps \
         TF_NEED_VERBS=0 \
         TF_NEED_OPENCL=0 \
         TF_NEED_CUDA=0 \
+        TF_NEED_MPI=0 \
         bash configure \
     && bazel build -c opt --local_resources ${LOCAL_RESOURCES} //tensorflow/tools/pip_package:build_pip_package \
     && ./bazel-bin/tensorflow/tools/pip_package/build_pip_package /tmp/tensorflow_pkg \
