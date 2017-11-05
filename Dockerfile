@@ -4,7 +4,7 @@ ENV JAVA_HOME /usr/lib/jvm/java-1.8-openjdk
 ENV LOCAL_RESOURCES 2048,.5,1.0
 
 ENV BAZEL_VERSION 0.7.0
-ENV TENSORFLOW_VERSION 1.3.0
+ENV TENSORFLOW_VERSION 1.4.0
 
 RUN apk add --no-cache python3 python3-tkinter py3-numpy py3-numpy-f2py freetype libpng libjpeg-turbo imagemagick graphviz git
 RUN apk add --no-cache --virtual=.build-deps \
@@ -57,11 +57,12 @@ RUN apk add --no-cache --virtual=.build-deps \
     && PYTHON_BIN_PATH=/usr/bin/python \
         PYTHON_LIB_PATH=/usr/lib/python3.6/site-packages \
         CC_OPT_FLAGS="-march=native" \
-        TF_NEED_MKL=0 \
         TF_NEED_JEMALLOC=1 \
         TF_NEED_GCP=0 \
         TF_NEED_HDFS=0 \
+        TF_NEED_S3=0 \
         TF_ENABLE_XLA=0 \
+        TF_NEED_GDR=0 \
         TF_NEED_VERBS=0 \
         TF_NEED_OPENCL=0 \
         TF_NEED_CUDA=0 \
