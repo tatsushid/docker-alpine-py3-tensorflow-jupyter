@@ -3,7 +3,7 @@ FROM alpine:3.6
 ENV JAVA_HOME /usr/lib/jvm/java-1.8-openjdk
 ENV LOCAL_RESOURCES 2048,.5,1.0
 
-ENV BAZEL_VERSION 0.5.2
+ENV BAZEL_VERSION 0.7.0
 ENV TENSORFLOW_VERSION 1.3.0
 
 RUN apk add --no-cache python3 python3-tkinter py3-numpy py3-numpy-f2py freetype libpng libjpeg-turbo imagemagick graphviz git
@@ -33,6 +33,8 @@ RUN apk add --no-cache --virtual=.build-deps \
     && cd /tmp \
     && pip3 install --no-cache-dir wheel \
     && : \
+    && : add python symlink to avoid python detection error \
+    && $(cd /usr/bin && ln -s python3 python) \
     && : install Bazel to build TensorFlow \
     && curl -SLO https://github.com/bazelbuild/bazel/releases/download/${BAZEL_VERSION}/bazel-${BAZEL_VERSION}-dist.zip \
     && mkdir bazel-${BAZEL_VERSION} \
@@ -50,8 +52,6 @@ RUN apk add --no-cache --virtual=.build-deps \
     && curl -SL https://github.com/tensorflow/tensorflow/archive/v${TENSORFLOW_VERSION}.tar.gz \
         | tar xzf - \
     && cd tensorflow-${TENSORFLOW_VERSION} \
-    && : add python symlink to avoid python detection error in configure \
-    && $(cd /usr/bin && ln -s python3 python) \
     && : musl-libc does not have "secure_getenv" function \
     && sed -i -e '/JEMALLOC_HAVE_SECURE_GETENV/d' third_party/jemalloc.BUILD \
     && PYTHON_BIN_PATH=/usr/bin/python \
